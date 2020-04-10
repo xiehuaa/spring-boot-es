@@ -7,7 +7,6 @@ import com.xh.es.repository.UniversityRepository;
 import com.xh.es.service.UniversityService;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -81,13 +80,6 @@ public class UniversityServiceImpl implements UniversityService {
         }
 
         searchQueryBuilder.withPageable(PageRequest.of(pageNum - 1, pageSize));
-        searchQueryBuilder.withSort(SortBuilders.scoreSort());
-
-        HighlightBuilder highlightBuilder = new HighlightBuilder();
-        highlightBuilder.preTags("<font style='color:red'>");
-        highlightBuilder.postTags("</font>");
-        highlightBuilder.field("name");
-        searchQueryBuilder.withHighlightBuilder(highlightBuilder);
 
         Page<UniversityItem> universityItemPage = universityRepository.search(searchQueryBuilder.build());
         List<UniversityItem> universityItemList = universityItemPage.getContent();
