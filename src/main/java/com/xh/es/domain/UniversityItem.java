@@ -18,7 +18,7 @@ import java.util.Date;
  */
 @Setter
 @Getter
-@Document(indexName = "university", type = "characters")
+@Document(indexName = "university", type = "university")
 public class UniversityItem implements Serializable {
 
     @Id
@@ -58,9 +58,9 @@ public class UniversityItem implements Serializable {
     @Field(type = FieldType.Short)
     private Short status;
 
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Long)
     private Date createTime;
 
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Long)
     private Date updateTime;
 }

@@ -1,8 +1,12 @@
 package com.xh.es.service.impl;
 
+import com.xh.es.domain.Region;
+import com.xh.es.domain.RegionItem;
 import com.xh.es.domain.University;
 import com.xh.es.domain.UniversityItem;
+import com.xh.es.mapper.RegionMapper;
 import com.xh.es.mapper.UniversityMapper;
+import com.xh.es.repository.RegionRepository;
 import com.xh.es.repository.UniversityRepository;
 import com.xh.es.service.UniversityService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +35,15 @@ import java.util.Map;
 @Slf4j
 @Service
 public class UniversityServiceImpl implements UniversityService {
+
+    @Resource
+    private RegionMapper regionMapper;
+
     @Resource
     private UniversityMapper universityMapper;
+
+    @Resource
+    private RegionRepository regionRepository;
 
     @Resource
     private UniversityRepository universityRepository;
@@ -42,8 +53,23 @@ public class UniversityServiceImpl implements UniversityService {
 
     @Override
     public void initEsData() {
+        elasticsearchRestTemplate.deleteIndex(RegionItem.class);
+        elasticsearchRestTemplate.createIndex(RegionItem.class);
+        elasticsearchRestTemplate.putMapping(RegionItem.class);
+
+        List<Region> regions = regionMapper.selectAll();
+        List<RegionItem> regionItemList = new ArrayList<>();
+        for (Region region : regions) {
+            RegionItem regionItem = new RegionItem();
+            BeanUtils.copyProperties(region, regionItem);
+
+            regionItemList.add(regionItem);
+        }
+        regionRepository.saveAll(regionItemList);
+
         elasticsearchRestTemplate.deleteIndex(UniversityItem.class);
         elasticsearchRestTemplate.createIndex(UniversityItem.class);
+        elasticsearchRestTemplate.putMapping(UniversityItem.class);
 
         List<University> universities = universityMapper.selectAll();
         List<UniversityItem> universityItemList = new ArrayList<>();
@@ -54,6 +80,7 @@ public class UniversityServiceImpl implements UniversityService {
             universityItemList.add(universityItem);
         }
         universityRepository.saveAll(universityItemList);
+
     }
 
     @Override
@@ -66,6 +93,7 @@ public class UniversityServiceImpl implements UniversityService {
 
             universities.add(university);
         }
+
         return universities;
     }
 
